@@ -1,0 +1,31 @@
+{
+  "name": "back-end-api-toefl",
+  "version": "1.0.0",
+  "description": "API Toefl",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js",
+    "lint": "eslint ./",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zenklot/back-end-api-toefl.git"
+  },
+  "keywords": [
+    "Node.JS",
+    "Express"
+  ],
+  "author": "Raisa Supriatna",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zenklot/back-end-api-toefl/issues"
+  },
+  "homepage": "https://github.com/zenklot/back-end-api-toefl#readme",
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.24.2",
+    "nodemon": "^2.0.13"
+  }
+}
