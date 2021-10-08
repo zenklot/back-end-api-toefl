@@ -3,7 +3,11 @@ const jwt = require('jsonwebtoken');
 function auth(req, res, next) {
   const token = req.header('auth-token') || req.cookies.token;
   if (!token) {
-    return res.status(401).json('tidak ada akses');
+    return res.status(401).json({
+      status: 401,
+      message: 'Unauthorized',
+      data: {},
+    });
   }
 
   try {
@@ -13,10 +17,16 @@ function auth(req, res, next) {
   } catch (error) {
     if (error.name === 'TokenExpiredError') {
       return res.status(401).json({
-        message: 'Token Expired!',
+        status: 401,
+        message: 'Unauthorized',
+        data: { message: 'Token Expired!' },
       });
     }
-    return res.status(400).send('token salah!');
+    return res.status(400).json({
+      status: 400,
+      message: 'Bad Request',
+      data: { message: 'Token Wrong!' },
+    });
   }
 }
 

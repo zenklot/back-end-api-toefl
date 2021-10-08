@@ -11,7 +11,11 @@ const register = async (req, res) => {
     // Validasi ngambil dari middle ware
     const { error } = validation(req.body);
     if (error) {
-      res.status(400).json(error);
+      res.status(400).json({
+        status: 400,
+        message: 'Bad Request',
+        data: { message: error.details[0].message },
+      });
       return;
     }
 
@@ -28,7 +32,11 @@ const register = async (req, res) => {
     const savedUser = await user.save();
     res.json(savedUser);
   } catch (error) {
-    res.status(400).json('Error!');
+    res.status(400).json({
+      status: 400,
+      message: 'Bad Request',
+      data: { message: error.message },
+    });
   }
 };
 
@@ -38,7 +46,11 @@ const login = async (req, res) => {
     const data = await User.findOne({ email });
 
     if (!data) {
-      res.status(400).json('Username Tidak Terdaftar');
+      res.status(400).json({
+        status: 400,
+        message: 'Bad Request',
+        data: { message: 'User is not registered!' },
+      });
       return;
     }
 
@@ -46,7 +58,11 @@ const login = async (req, res) => {
     const resultLogin = bcrypt.compareSync(password, data.password);
 
     if (!resultLogin) {
-      res.status(400).send('Username atau Password Salah !');
+      res.status(400).json({
+        status: 400,
+        message: 'Bad Request',
+        data: { message: 'Password wrong!' },
+      });
       return;
     }
     /* eslint no-underscore-dangle: ["error", { "allow": ["_id"] }] */
@@ -67,7 +83,11 @@ const login = async (req, res) => {
 
     res.json('berhasil Login');
   } catch (error) {
-    res.status(500).json(error);
+    res.status(500).json({
+      status: 500,
+      message: 'There was an error on the server and the request could not be completed',
+      data: { message: error.message },
+    });
   }
 };
 
@@ -79,11 +99,15 @@ const postRefreshToken = (req, res) => {
       { expiresIn: process.env.KUNCI_TOKEN_EXP });
     res.header({ 'auth-token': token, 'refresh-token': refreshToken });
     res.status(200).json({
-      message: 'Token refreshed successfully!',
+      status: 200,
+      message: 'Everything is OK',
+      data: { message: 'Refresh Token Berhasil!' },
     });
   } catch (error) {
     res.status(400).json({
-      error,
+      status: 400,
+      message: 'Bad Request',
+      data: { message: error.message },
     });
   }
 };
@@ -103,18 +127,21 @@ const logout = (req, res) => {
     res.cookie('ref-token', '', { maxAge: 0 });
     // res.redirect('/api/');
     res.status(200).json({
-      message: 'Anda Telah LogOut!',
-      // data: hapusToken,
+      status: 200,
+      message: 'Everything is OK',
+      data: { message: 'Logout success!' },
     });
   } catch (error) {
     res.status(400).json({
-      error: error.message,
+      status: 400,
+      message: 'Bad Request',
+      data: { message: error.message },
     });
   }
 };
 
 const methodGet = (req, res) => {
-  res.send('contoh get');
+  res.json('contoh get');
 };
 
 module.exports = {
