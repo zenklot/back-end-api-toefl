@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 
 function auth(req, res, next) {
-  const token = req.header('auth-token');
+  const token = req.header('auth-token') || req.cookies.token;
   if (!token) {
     return res.status(401).json('tidak ada akses');
   }
@@ -11,6 +11,11 @@ function auth(req, res, next) {
     req.user = verifikasi;
     return next();
   } catch (error) {
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({
+        message: 'Token Expired!',
+      });
+    }
     return res.status(400).send('token salah!');
   }
 }
