@@ -12,6 +12,7 @@ const register = async (req, res) => {
     const { error } = validation(req.body);
     if (error) {
       res.status(400).json(error);
+      return;
     }
 
     // enkripsi
@@ -40,6 +41,7 @@ const login = async (req, res) => {
 
     if (!data) {
       res.status(400).json('Username Tidak Terdaftar');
+      return;
     }
 
     // deskrip
@@ -47,9 +49,11 @@ const login = async (req, res) => {
 
     if (!resultLogin) {
       res.status(400).send('Username atau Password Salah !');
+      return;
     }
 
-    const token = jwt.sign({ email: data.email }, process.env.KUNCI_TOKEN);
+    // eslint-disable-next-line no-underscore-dangle
+    const token = jwt.sign({ id: data._id }, process.env.KUNCI_TOKEN, { expiresIn: '1h' });
 
     res.header('auth-token', token).json('berhasil Login');
   } catch (error) {
