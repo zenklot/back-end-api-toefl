@@ -119,12 +119,7 @@ const postRefreshToken = (req, res) => {
 // eslint-disable-next-line consistent-return
 const logout = (req, res) => {
   try {
-    const token = req.header('auth-token') || req.cookies.token;
-    if (!token) {
-      return res.status(401).json('Maaf Anda Harus Login Terlebih Dahulu!');
-    }
-    const verifikasi = jwt.verify(token, process.env.KUNCI_TOKEN);
-    const hapusToken = jwt.sign({ id: verifikasi._id }, process.env.KUNCI_TOKEN,
+    const hapusToken = jwt.sign({ id: '' }, process.env.KUNCI_TOKEN,
       { expiresIn: '0s' });
     res.header({ 'auth-token': hapusToken, 'refresh-token': hapusToken });
     res.cookie('token', '', { maxAge: 0 });
