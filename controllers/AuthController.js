@@ -1,19 +1,16 @@
-const { nanoid } = require('nanoid');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
-
-const { validation } = require('../middleware/validation');
+const { validUserReg } = require('../middleware/validation');
 require('dotenv').config();
 const User = require('../models/User');
-const EmailValid = require('../models/EmailValid');
 
 const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
     // Validasi ngambil dari middle ware
-    const { error } = validation(req.body);
+    const { error } = validUserReg(req.body);
     if (error) {
       res.status(400).json({
         status: 400,
@@ -36,15 +33,8 @@ const register = async (req, res) => {
     // save ke db
     const savedUser = await user.save();
 
-    // save token valid to db and send email verifikasi
-    const kodeId = nanoid();
-
-    const emailValidasi = new EmailValid({
-      userId: savedUser._id,
-      token: kodeId,
-    });
-
-    await emailValidasi.save();
+    const token = jwt.sign({ email }, process.env.KUNCI_VALID_EMAIL,
+      { expiresIn: process.env.KUNCI_VALID_EMAIL_EXP });
 
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -59,7 +49,7 @@ const register = async (req, res) => {
       to: email,
       subject: 'Verifikasi Alamat Email',
       html: `<h3>Silahkan Klik Tombol Dibawah Untuk Verifikasi Email</h3>
-      <a href="http://${req.headers.host}/api/user/verify-email?id=${kodeId}" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';box-sizing:border-box;border-radius:3px;color:#fff;display:inline-block;text-decoration:none;background-color:#3490dc;border-top:10px solid #3490dc;border-right:18px solid #3490dc;border-bottom:10px solid #3490dc;border-left:18px solid #3490dc" target="_blank">Verifikasi Alamat Email</a>
+      <a href="${process.env.CLIENT_HOST}/api/auth/verify-email/${token}" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';box-sizing:border-box;border-radius:3px;color:#fff;display:inline-block;text-decoration:none;background-color:#3490dc;border-top:10px solid #3490dc;border-right:18px solid #3490dc;border-bottom:10px solid #3490dc;border-left:18px solid #3490dc" target="_blank">Verifikasi Alamat Email</a>
       `,
     };
 
@@ -187,6 +177,29 @@ const logout = (req, res) => {
   }
 };
 
+const emailVerifycation = async (req, res) => {
+  const { email } = req.user;
+
+  const newUserData = await User.findOneAndUpdate({ email },
+    { verification: true },
+    { returnOriginal: false });
+
+  if (!newUserData) {
+    res.status(400).json({
+      status: 400,
+      message: 'Bad Request',
+      data: { message: 'Error tidak ditemukan emailya' },
+    });
+    return;
+  }
+
+  res.json({
+    status: 200,
+    message: 'Everything is OK',
+    data: { message: 'Validasi Email Berhasil!' },
+  });
+};
+
 const methodGet = (req, res) => {
   res.json('contoh get');
 };
@@ -196,5 +209,6 @@ module.exports = {
   login,
   postRefreshToken,
   logout,
+  emailVerifycation,
   methodGet,
 };

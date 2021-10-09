@@ -1,6 +1,6 @@
 const Joi = require('@hapi/joi');
 
-const validation = (data) => {
+const validUserReg = (data) => {
   const schema = Joi.object({
     name: Joi.string().min(4).required(),
     email: Joi.string().email().required(),
@@ -9,4 +9,6 @@ const validation = (data) => {
   return schema.validate(data);
 };
 
-module.exports.validation = validation;
+module.exports = {
+  validUserReg,
+};
