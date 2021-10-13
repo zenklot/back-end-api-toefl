@@ -59,4 +59,51 @@ function authEmailVerify(req, res, next) {
     });
   }
 }
-module.exports = { authLogin, authEmailVerify };
+
+function refreshTokenVerify(req, res, next) {
+  try {
+    const { refreshToken } = req.body;
+    if (!refreshToken) {
+      return res.status(401).json({
+        status: 401,
+        message: 'Unauthorized',
+        data: {},
+      });
+    }
+    const verifikasi = jwt.verify(refreshToken, process.env.REFRESH_TOKEN);
+    req.user = verifikasi;
+    return next();
+  } catch (error) {
+    return res.status(400).json({
+      status: 400,
+      message: 'Bad Request',
+      data: { message: error.message },
+    });
+  }
+}
+
+function forgetPwdToken(req, res, next) {
+  try {
+    const { token } = req.query;
+    if (!token) {
+      return res.status(401).json({
+        status: 401,
+        message: 'Unauthorized',
+        data: {},
+      });
+    }
+    const verifikasi = jwt.verify(token, process.env.KUNCI_FORGET_PWD);
+    req.user = verifikasi;
+    req.user.token = token;
+    return next();
+  } catch (error) {
+    return res.status(400).json({
+      status: 400,
+      message: 'Bad Request',
+      data: { message: error.message },
+    });
+  }
+}
+module.exports = {
+  authLogin, authEmailVerify, refreshTokenVerify, forgetPwdToken,
+};
