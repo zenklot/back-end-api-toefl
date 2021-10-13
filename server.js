@@ -25,7 +25,7 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/api', auth);
+app.use('/auth', auth);
 
 app.listen(port, () => {
   console.log(`Server Is Running on Port : ${port}`);
