@@ -16,7 +16,15 @@ const validForgetPwd = (data) => {
   return schema.validate(data);
 };
 
+const validUserUpdate = (data) => {
+  const schema = Joi.object({
+    name: Joi.string().min(4).required(),
+  });
+  return schema.validate(data);
+};
+
 module.exports = {
   validUserReg,
   validForgetPwd,
+  validUserUpdate,
 };
