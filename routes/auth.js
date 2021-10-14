@@ -2,11 +2,13 @@ const express = require('express');
 const {
   authLogin, authEmailVerify, refreshTokenVerify, forgetPwdToken,
 } = require('../middleware/verifyToken');
+const { authRole } = require('../middleware/rolePermission');
 
 const router = express.Router();
 const AuthController = require('../controllers/AuthController');
+const { ROLE } = require('../permissions/userRole');
 
-router.get('/', authLogin, AuthController.methodGet);
+router.get('/', authLogin, authRole(ROLE.ADMIN), AuthController.methodGet);
 router.post('/register', AuthController.postRegister);
 router.post('/login', AuthController.postLogin);
 router.post('/refresh-token', refreshTokenVerify, AuthController.postRefreshToken);
