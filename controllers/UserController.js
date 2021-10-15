@@ -1,3 +1,4 @@
+const CryptoJS = require('crypto-js');
 require('dotenv').config();
 const User = require('../models/User');
 const { validUserUpdate } = require('../middleware/validation');
@@ -16,7 +17,11 @@ const getDetail = async (req, res) => {
       return;
     }
     // eslint-disable-next-line no-underscore-dangle
-    const { password, ...dataUser } = userData._doc;
+    const { password, saldo, ...dataUser } = userData._doc;
+    const bytes = CryptoJS.AES.decrypt(saldo, process.env.CRYPTO_KEY);
+    const decrypted = parseFloat(bytes.toString(CryptoJS.enc.Utf8));
+
+    dataUser.saldo = decrypted;
     res.json({
       status: 200,
       message: 'Everything is OK',

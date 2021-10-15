@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-
+const CryptoJS = require('crypto-js');
 const { validUserReg, validForgetPwd } = require('../middleware/validation');
 const { transporter } = require('../helpers/sendMail');
 require('dotenv').config();
@@ -24,12 +24,13 @@ const postRegister = async (req, res) => {
     // enkripsi
     const salt = bcrypt.genSaltSync(10);
     const hashedPassword = await bcrypt.hashSync(password, salt);
-    const hashSaldo = await bcrypt.hashSync('0', 8);
+    const hash = CryptoJS.AES.encrypt('0', process.env.CRYPTO_KEY).toString();
+
     const user = new User({
       name,
       email,
       password: hashedPassword,
-      saldo: hashSaldo,
+      saldo: hash,
     });
 
     // save ke db
