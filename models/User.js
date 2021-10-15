@@ -8,6 +8,7 @@ const userSchema = new Schema({
   password: { type: String, required: true },
   verification: { type: Boolean, default: false },
   role: { type: String, default: 'user' },
+  saldo: { type: String },
 }, { timestamps: true });
 
 const User = mongoose.model('User', userSchema);

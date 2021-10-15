@@ -24,10 +24,12 @@ const postRegister = async (req, res) => {
     // enkripsi
     const salt = bcrypt.genSaltSync(10);
     const hashedPassword = await bcrypt.hashSync(password, salt);
+    const hashSaldo = await bcrypt.hashSync('0', 8);
     const user = new User({
       name,
       email,
       password: hashedPassword,
+      saldo: hashSaldo,
     });
 
     // save ke db
